@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunk_minimajs_docs=self.webpackChunk_minimajs_docs||[]).push([[4802],{147:e=>{e.exports=JSON.parse('{"label":"Features","permalink":"/tags/features","allTagsPath":"/tags","count":1,"items":[{"id":"features","title":"features","description":"Demo - A hello world","permalink":"/features"}],"unlisted":false}')}}]);

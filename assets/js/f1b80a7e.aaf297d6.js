@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunk_minimajs_docs=self.webpackChunk_minimajs_docs||[]).push([[6763],{1171:e=>{e.exports=JSON.parse('{"label":"All is well","permalink":"/tags/all-is-well","allTagsPath":"/tags","count":1,"items":[{"id":"features","title":"features","description":"Demo - A hello world","permalink":"/features"}],"unlisted":false}')}}]);
