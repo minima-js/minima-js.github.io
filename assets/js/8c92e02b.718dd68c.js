@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunk_minimajs_docs=self.webpackChunk_minimajs_docs||[]).push([[5410],{7337:e=>{e.exports=JSON.parse('{"label":"logger","permalink":"/tags/logger","allTagsPath":"/tags","count":1,"items":[{"id":"Guide/logger","title":"Logging","description":"MinimaJS: Integrated Logging with Pino","permalink":"/Guide/logger"}],"unlisted":false}')}}]);
