@@ -1,1 +1,0 @@
-import{_ as e,c as s,o as t}from"./chunks/framework.dvv-DFtf.js";const m=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"recipes/_session.md","filePath":"recipes/_session.md"}'),o={name:"recipes/_session.md"};function r(a,n,c,i,_,p){return t(),s("div")}const f=e(o,[["render",r]]);export{m as __pageData,f as default};
