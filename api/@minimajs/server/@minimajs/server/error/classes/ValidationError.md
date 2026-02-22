@@ -1,0 +1,565 @@
+---
+url: /api/@minimajs/server/@minimajs/server/error/classes/ValidationError.md
+---
+[**Minima.js API**](../../../../../../README.md)
+
+***
+
+[Minima.js API](../../../../../../README.md) / [@minimajs/server](../../../../README.md) / [@minimajs/server/error](../README.md) / ValidationError
+
+# Class: ValidationError\<R>
+
+Defined in: [packages/server/src/error.ts:122](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L122)
+
+Represents the response body of an HTTP error.
+Can be either a simple string message or a dictionary object with custom error data.
+
+## Extends
+
+* [`HttpError`](HttpError.md)<`R`>
+
+## Type Parameters
+
+### R
+
+`R` = `unknown`
+
+## Constructors
+
+### Constructor
+
+```ts
+new ValidationError<R>(response, options?): ValidationError<R>;
+```
+
+Defined in: [packages/server/src/error.ts:127](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L127)
+
+The initial value of Object.prototype.constructor is the standard built-in Object constructor.
+
+#### Parameters
+
+##### response
+
+`R` = `...`
+
+##### options?
+
+[`HttpErrorOptions`](../interfaces/HttpErrorOptions.md)
+
+#### Returns
+
+`ValidationError`<`R`>
+
+#### Overrides
+
+[`HttpError`](HttpError.md).[`constructor`](HttpError.md#constructor)
+
+## Properties
+
+### base?
+
+```ts
+optional base: unknown;
+```
+
+Defined in: [packages/server/src/error.ts:66](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L66)
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`base`](HttpError.md#base)
+
+***
+
+### cause?
+
+```ts
+optional cause: unknown;
+```
+
+Defined in: node\_modules/.bun/typescript@5.9.3/node\_modules/typescript/lib/lib.es2022.error.d.ts:26
+
+The cause of the error.
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`cause`](HttpError.md#cause)
+
+***
+
+### code?
+
+```ts
+optional code: string;
+```
+
+Defined in: [packages/server/src/error.ts:30](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L30)
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`code`](HttpError.md#code)
+
+***
+
+### constructor
+
+```ts
+constructor: typeof HttpError;
+```
+
+Defined in: [packages/server/src/error.ts:68](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L68)
+
+The initial value of Object.prototype.constructor is the standard built-in Object constructor.
+
+#### Inherited from
+
+```ts
+HttpError.constructor
+```
+
+***
+
+### headers?
+
+```ts
+optional headers: HeadersInit;
+```
+
+Defined in: [packages/server/src/error.ts:67](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L67)
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`headers`](HttpError.md#headers)
+
+***
+
+### message
+
+```ts
+message: string;
+```
+
+Defined in: node\_modules/.bun/typescript@5.9.3/node\_modules/typescript/lib/lib.es5.d.ts:1077
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`message`](HttpError.md#message)
+
+***
+
+### name
+
+```ts
+name: string;
+```
+
+Defined in: node\_modules/.bun/typescript@5.9.3/node\_modules/typescript/lib/lib.es5.d.ts:1076
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`name`](HttpError.md#name)
+
+***
+
+### response
+
+```ts
+response: R;
+```
+
+Defined in: [packages/server/src/error.ts:65](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L65)
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`response`](HttpError.md#response)
+
+***
+
+### stack?
+
+```ts
+optional stack: string;
+```
+
+Defined in: node\_modules/.bun/typescript@5.9.3/node\_modules/typescript/lib/lib.es5.d.ts:1078
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`stack`](HttpError.md#stack)
+
+***
+
+### status
+
+```ts
+status: number;
+```
+
+Defined in: [packages/server/src/error.ts:64](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L64)
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`status`](HttpError.md#status)
+
+***
+
+### getStatusCode()
+
+```ts
+static getStatusCode: <T>(_error) => number;
+```
+
+Defined in: [packages/server/src/error.ts:123](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L123)
+
+#### Type Parameters
+
+##### T
+
+`T` *extends* `ValidationError`<`unknown`>
+
+#### Parameters
+
+##### \_error
+
+`T`
+
+#### Returns
+
+`number`
+
+***
+
+### stackTraceLimit
+
+```ts
+static stackTraceLimit: number;
+```
+
+Defined in: node\_modules/.bun/@types+node@25.0.5/node\_modules/@types/node/globals.d.ts:67
+
+The `Error.stackTraceLimit` property specifies the number of stack frames
+collected by a stack trace (whether generated by `new Error().stack` or
+`Error.captureStackTrace(obj)`).
+
+The default value is `10` but may be set to any valid JavaScript number. Changes
+will affect any stack trace captured *after* the value has been changed.
+
+If set to a non-number value, or set to a negative number, stack traces will
+not capture any frames.
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`stackTraceLimit`](HttpError.md#stacktracelimit)
+
+***
+
+### toJSON()
+
+```ts
+static toJSON: <T>(err) => unknown;
+```
+
+Defined in: [packages/server/src/error.ts:46](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L46)
+
+#### Type Parameters
+
+##### T
+
+`T` *extends* [`HttpError`](HttpError.md)<`unknown`> = [`HttpError`](HttpError.md)<`unknown`>
+
+#### Parameters
+
+##### err
+
+`T`
+
+#### Returns
+
+`unknown`
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`toJSON`](HttpError.md#tojson)
+
+## Methods
+
+### render()
+
+```ts
+render(ctx): Promise<Response>;
+```
+
+Defined in: [packages/server/src/error.ts:80](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L80)
+
+#### Parameters
+
+##### ctx
+
+[`Context`](../../interfaces/Context.md)
+
+#### Returns
+
+`Promise`<`Response`>
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`render`](HttpError.md#render)
+
+***
+
+### toJSON()
+
+```ts
+toJSON(): unknown;
+```
+
+Defined in: [packages/server/src/error.ts:76](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L76)
+
+#### Returns
+
+`unknown`
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`toJSON`](HttpError.md#tojson-1)
+
+***
+
+### captureStackTrace()
+
+#### Call Signature
+
+```ts
+static captureStackTrace(targetObject, constructorOpt?): void;
+```
+
+Defined in: node\_modules/.bun/@types+node@25.0.5/node\_modules/@types/node/globals.d.ts:51
+
+Creates a `.stack` property on `targetObject`, which when accessed returns
+a string representing the location in the code at which
+`Error.captureStackTrace()` was called.
+
+```js
+const myObject = {};
+Error.captureStackTrace(myObject);
+myObject.stack;  // Similar to `new Error().stack`
+```
+
+The first line of the trace will be prefixed with
+`${myObject.name}: ${myObject.message}`.
+
+The optional `constructorOpt` argument accepts a function. If given, all frames
+above `constructorOpt`, including `constructorOpt`, will be omitted from the
+generated stack trace.
+
+The `constructorOpt` argument is useful for hiding implementation
+details of error generation from the user. For instance:
+
+```js
+function a() {
+  b();
+}
+
+function b() {
+  c();
+}
+
+function c() {
+  // Create an error without stack trace to avoid calculating the stack trace twice.
+  const { stackTraceLimit } = Error;
+  Error.stackTraceLimit = 0;
+  const error = new Error();
+  Error.stackTraceLimit = stackTraceLimit;
+
+  // Capture the stack trace above function b
+  Error.captureStackTrace(error, b); // Neither function c, nor b is included in the stack trace
+  throw error;
+}
+
+a();
+```
+
+##### Parameters
+
+###### targetObject
+
+`object`
+
+###### constructorOpt?
+
+`Function`
+
+##### Returns
+
+`void`
+
+##### Inherited from
+
+[`HttpError`](HttpError.md).[`captureStackTrace`](HttpError.md#capturestacktrace)
+
+#### Call Signature
+
+```ts
+static captureStackTrace(targetObject, constructorOpt?): void;
+```
+
+Defined in: node\_modules/.bun/bun-types@1.3.5/node\_modules/bun-types/globals.d.ts:1042
+
+Create .stack property on a target object
+
+##### Parameters
+
+###### targetObject
+
+`object`
+
+###### constructorOpt?
+
+`Function`
+
+##### Returns
+
+`void`
+
+##### Inherited from
+
+[`HttpError`](HttpError.md).[`captureStackTrace`](HttpError.md#capturestacktrace)
+
+***
+
+### create()
+
+```ts
+static create(err, status): HttpError<string>;
+```
+
+Defined in: [packages/server/src/error.ts:52](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L52)
+
+#### Parameters
+
+##### err
+
+`unknown`
+
+##### status
+
+`number` = `500`
+
+#### Returns
+
+[`HttpError`](HttpError.md)<`string`>
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`create`](HttpError.md#create)
+
+***
+
+### is()
+
+```ts
+static is(value): value is HttpError<unknown>;
+```
+
+Defined in: [packages/server/src/error.ts:49](https://github.com/minima-js/minimajs/blob/15b6e807136b0797f41b873bcc5ffc55e94e112c/packages/server/src/error.ts#L49)
+
+#### Parameters
+
+##### value
+
+`unknown`
+
+#### Returns
+
+`value is HttpError<unknown>`
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`is`](HttpError.md#is)
+
+***
+
+### isError()
+
+#### Call Signature
+
+```ts
+static isError(error): error is Error;
+```
+
+Defined in: node\_modules/.bun/typescript@5.9.3/node\_modules/typescript/lib/lib.esnext.error.d.ts:23
+
+Indicates whether the argument provided is a built-in Error instance or not.
+
+##### Parameters
+
+###### error
+
+`unknown`
+
+##### Returns
+
+`error is Error`
+
+##### Inherited from
+
+[`HttpError`](HttpError.md).[`isError`](HttpError.md#iserror)
+
+#### Call Signature
+
+```ts
+static isError(value): value is Error;
+```
+
+Defined in: node\_modules/.bun/bun-types@1.3.5/node\_modules/bun-types/globals.d.ts:1037
+
+Check if a value is an instance of Error
+
+##### Parameters
+
+###### value
+
+`unknown`
+
+The value to check
+
+##### Returns
+
+`value is Error`
+
+True if the value is an instance of Error, false otherwise
+
+##### Inherited from
+
+[`HttpError`](HttpError.md).[`isError`](HttpError.md#iserror)
+
+***
+
+### prepareStackTrace()
+
+```ts
+static prepareStackTrace(err, stackTraces): any;
+```
+
+Defined in: node\_modules/.bun/@types+node@25.0.5/node\_modules/@types/node/globals.d.ts:55
+
+#### Parameters
+
+##### err
+
+`Error`
+
+##### stackTraces
+
+`CallSite`\[]
+
+#### Returns
+
+`any`
+
+#### See
+
+https://v8.dev/docs/stack-trace-api#customizing-stack-traces
+
+#### Inherited from
+
+[`HttpError`](HttpError.md).[`prepareStackTrace`](HttpError.md#preparestacktrace)

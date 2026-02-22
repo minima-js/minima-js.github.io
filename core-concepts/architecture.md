@@ -1,0 +1,353 @@
+---
+url: /core-concepts/architecture.md
+---
+# Architecture
+
+Minima.js is designed with a **modular, scalable, and runtime-native architecture**. It is built entirely from scratch to enable native integration with modern runtimes like Bun while maintaining full Node.js compatibility, with zero legacy overhead.
+
+## Application & Request Lifecycle
+
+Understanding Minima.js’s lifecycle is key to building robust applications. It consists of two interconnected flows: the global application lifecycle and the per-request processing stages.
+
+For a comprehensive guide to all available hooks, see the [Hooks Guide](/guides/hooks).
+
+### Application Lifecycle
+
+The application passes through four key phases from start to finish.
+
+```mermaid
+graph TD
+    Start([createApp]) --> Register
+    Register["hook:register · ↓ FIFO<br/><small>Plugins & modules</small>"] --> Ready
+    Ready["hook:ready · ↓ FIFO<br/><small>Initialization complete</small>"] --> Listen
+    Listen["hook:listen · ↓ FIFO<br/><small>Server started</small>"] --> Serving{Server Running}
+    Serving -->|Incoming Requests| RequestCycle[REQUEST LIFECYCLE<br/>see below]
+    RequestCycle --> Serving
+    Serving -->|app.close| Close["hook:close · ↑ LIFO<br/><small>Cleanup & shutdown</small>"]
+    Close --> End([Application Stopped])
+
+    style Register fill:#e1f5ff
+    style Ready fill:#e7f9e7
+    style Listen fill:#fff4e1
+    style Serving fill:#f0f0f0
+    style Close fill:#ffe1e1
+    style RequestCycle fill:#f5e1ff
+```
+
+### Request Lifecycle
+
+Each incoming request flows through multiple stages with three main execution paths.
+
+```mermaid
+graph TD
+    Start([Incoming HTTP Request])
+    Start --> CreateCtx["Create Context<br/><small>params · body · headers</small>"]
+
+    CreateCtx --> ReqHook{"hook:request<br/><small>↓ FIFO</small>"}
+
+    ReqHook -->|Returns Response<br/><small>short-circuit</small>| SendHook
+    ReqHook -->|Continue| RouteMatch{{"Route Matching"}}
+
+    RouteMatch --> Handler["Route Handler<br/>Execution"]
+
+    Handler -->|Returns data| Transform{"hook:transform<br/><small>↑ LIFO</small>"}
+    Handler -->|Returns Response| SendHook
+
+    Transform --> Serialize[/"Serialize body<br/><small>JSON · text · stream</small>"\]
+
+    Serialize --> SendHook{"hook:send<br/><small>↑ LIFO</small>"}
+
+    SendHook --> Defer(["defer()<br/><small>post-response tasks</small>"])
+    Defer --> Complete([Request Complete])
+
+    %% Error Flow
+    ReqHook -.->|throws| ErrorHook
+    RouteMatch -.->|throws| ErrorHook
+    Handler -.->|throws| ErrorHook
+    Transform -.->|throws| ErrorHook
+
+    ErrorHook{"hook:error<br/><small>↑ LIFO</small>"}
+        --> SerializeErr[/"Serialize error"\]
+        --> ErrorSendHook{"hook:send<br/><small>↑ LIFO</small>"}
+        --> OnError(["onError()<br/><small>request cleanup</small>"])
+        --> Defer
+
+    %% Styling - Hooks (diamonds)
+    style ReqHook fill:#fff4e1,stroke:#ffa726,stroke-width:2px
+    style Transform fill:#ffe7f0,stroke:#e91e63,stroke-width:2px
+    style SendHook fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+    style ErrorHook fill:#ffebee,stroke:#f44336,stroke-width:2px
+    style ErrorSendHook fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+
+    %% Initialization & Context
+    style CreateCtx fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+
+    %% Routing & Matching
+    style RouteMatch fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+
+    %% Main Processing
+    style Handler fill:#ede7f6,stroke:#673ab7,stroke-width:3px
+
+    %% Data Transformation (parallelograms)
+    style Serialize fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    style SerializeErr fill:#ffebee,stroke:#f44336,stroke-width:2px
+
+    %% Cleanup & Lifecycle (stadiums)
+    style Defer fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px
+    style OnError fill:#ffebee,stroke:#f44336,stroke-width:2px
+
+    %% Start/End
+    style Start fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+    style Complete fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+```
+
+## Hook System
+
+The hook system gives you fine-grained control over the application and request lifecycle.
+
+### Hook Execution Order
+
+Hooks within the same scope execute in **FIFO** (First-In-First-Out) order for request hooks. Register hooks via `meta.plugins`:
+
+::: code-group
+
+```typescript [src/users/module.ts]
+import { hook } from "@minimajs/server";
+
+export const meta = {
+  plugins: [hook("request", () => console.log("First registered")), hook("request", () => console.log("Second registered"))],
+};
+
+export const routes: Routes = {
+  // routes here
+};
+```
+
+:::
+
+**Execution order:**
+
+1. "First registered" → runs first
+2. "Second registered" → runs second
+
+### Encapsulation and Scope Isolation
+
+Each module creates an **isolated scope**. Hooks and plugins registered via `meta.plugins` only affect that module and its children, not siblings or parents.
+
+```mermaid
+graph TB
+    Root[Root Scope<br/>hook: Root hook]
+    Root --> Child1[Child Scope 1<br/>hook: Child 1 hook<br/>route: /users]
+    Root --> Child2[Child Scope 2<br/>hook: Child 2 hook<br/>route: /admin]
+
+    subgraph Execution["Request Execution"]
+        direction TB
+        U1["/users request"] --> UE1[✓ Root hook] --> UE2[✓ Child 1 hook] --> UE3[✓ /users handler]
+        A1["/admin request"] --> AE1[✓ Root hook] --> AE2[✓ Child 2 hook] --> AE3[✓ /admin handler]
+    end
+
+    Child1 -.->|influences| U1
+    Child2 -.->|influences| A1
+
+    style Root fill:#e1f5ff,stroke:#2196f3,stroke-width:2px
+    style Child1 fill:#e7f9e7,stroke:#4caf50,stroke-width:2px
+    style Child2 fill:#fff4e1,stroke:#ff9800,stroke-width:2px
+    style UE1 fill:#cfe8fc
+    style UE2 fill:#d4f1d4
+    style AE1 fill:#cfe8fc
+    style AE2 fill:#fff0cc
+```
+
+**Example:**
+
+::: code-group
+
+```typescript [src/module.ts]
+import { hook } from "@minimajs/server";
+
+// Root module - hooks apply to all child modules
+export const meta = {
+  plugins: [hook("request", () => console.log("Root hook"))],
+};
+
+export const routes: Routes = {
+  "GET /health": () => "ok",
+};
+```
+
+```typescript [src/users/module.ts]
+import { hook } from "@minimajs/server";
+
+// Child scope 1
+export const meta = {
+  plugins: [hook("request", () => console.log("Users hook"))],
+};
+
+export const routes: Routes = {
+  "GET /list": () => "users",
+  // Request to /users/list executes: Root hook → Users hook
+};
+```
+
+```typescript [src/admin/module.ts]
+import { hook } from "@minimajs/server";
+
+// Child scope 2 (isolated from users module)
+export const meta = {
+  plugins: [hook("request", () => console.log("Admin hook"))],
+};
+
+export const routes: Routes = {
+  "GET /dashboard": () => "admin",
+  // Request to /admin/dashboard executes: Root hook → Admin hook
+};
+```
+
+:::
+
+***
+
+## Execution Paths & Performance
+
+There are four primary execution paths a request can take, each with different performance characteristics.
+
+```mermaid
+graph TD
+    Start([Incoming Request]) --> Choice{Execution Path}
+
+    Choice -->|1️⃣ Normal Flow| N1[Route Match]
+    N1 --> N2[Handler returns data]
+    N2 --> N3["TRANSFORM Hook<br/><small>↑ LIFO</small>"]
+    N3 --> N4[Serialize to JSON]
+    N4 --> N5["SEND Hook<br/><small>↑ LIFO</small>"]
+    N5 --> N6[defer callbacks]
+    N6 --> N7[Send Response]
+
+    Choice -->|2️⃣ Direct Response| D1[Route Match]
+    D1 --> D2[Handler returns Response]
+    D2 --> D5["SEND Hook<br/><small>↑ LIFO</small>"] --> N6
+
+    Choice -->|3️⃣ Early Return| E1["REQUEST Hook<br/><small>↓ FIFO</small>"]
+    E1 --> E2[Returns Response]
+    E2 --> E5["SEND Hook<br/><small>↑ LIFO</small>"] --> N6
+
+    Choice -.->|4️⃣ Error at Any Stage| R1["ERROR Hook<br/><small>↑ LIFO</small>"]
+    R1 --> R2[Serialize Error]
+    R2 --> R3["SEND Hook<br/><small>↑ LIFO</small>"]
+    R3 --> R4[onError callbacks] --> N6
+
+    style N2 fill:#e7f9e7
+    style N3 fill:#e7f9e7
+    style N4 fill:#e7f9e7
+    style D2 fill:#fff4e1
+    style E2 fill:#e1f5ff
+    style R1 fill:#ffe1e1
+    style R2 fill:#ffe1e1
+    style R4 fill:#ffe1e1
+```
+
+### 1. Normal Flow (Automatic Serialization)
+
+This is the standard path where data returned from a handler goes through the full processing pipeline.
+
+```
+REQUEST → Route Match → Handler (returns data) → TRANSFORM → Serialize → SEND → ...
+```
+
+### 2. Direct Response Flow (Bypass Hooks)
+
+Returning a `Response` object from a handler bypasses the `transform` and serialization steps for higher performance.
+
+```
+REQUEST → Route Match → Handler (returns Response) → SEND → ...
+```
+
+### 3. Early Return Flow (Short-Circuit)
+
+Returning a `Response` from an early hook (like `request`) terminates the lifecycle immediately. This is the fastest path and is ideal for things like health checks or handling blocked IPs.
+
+```
+REQUEST → hook('request') (returns Response) → SEND → ...
+```
+
+### 4. Error Flow
+
+When an error is thrown, the normal flow is interrupted, and the `error` hook pipeline is executed.
+
+```
+Any Stage → (error) → ERROR → Serialize Error → ...
+```
+
+For more details, see the [Error Handling Guide](/guides/error-handling).
+
+### Performance Considerations
+
+**Fastest to Slowest Execution Paths:**
+
+1. **Direct Response in `request` hook** → Bypasses everything.
+2. **Direct Response in handler** → Bypasses transform & serialization.
+3. **Returning data in handler** → Full pipeline.
+
+::: code-group
+
+```typescript [src/api/module.ts]
+import { hook, type Routes } from "@minimajs/server";
+
+export const meta = {
+  plugins: [
+    // Ultra-fast health check (Path 3)
+    hook("request", ({ pathname, responseState }) => {
+      if (pathname === "/health") {
+        // carry global response
+        return new Response("OK", responseState);
+      }
+    }),
+  ],
+};
+
+export const routes: Routes = {
+  // Fast static response (Path 2)
+  "GET /ping": ({ responseState }) => new Response("pong", responseState),
+
+  // Full pipeline (Path 1)
+  "GET /data": () => ({ data: "value" }),
+};
+```
+
+:::
+
+***
+
+## Core Design Principles
+
+Minima.js is built on three pillars that work together to provide a modern and efficient development experience.
+
+### 1. Native Runtime Integration
+
+Minima.js provides platform-specific imports that leverage **native APIs**, eliminating abstraction layers and delivering peak runtime performance.
+
+::: code-group
+
+```ts [Bun]
+import { createApp } from "@minimajs/server/bun";
+// Uses Bun's native HTTP server for maximum performance.
+```
+
+```ts [Node.js]
+import { createApp } from "@minimajs/server/node";
+// Uses Node.js's native HTTP server.
+```
+
+:::
+
+### 2. Web API Standards
+
+The framework uses **native Web API `Request` and `Response` objects** instead of Node.js-specific abstractions. This makes the API portable, familiar to web developers, and future-proof.
+
+### 3. Modular, Scope-Isolated Design
+
+Filesystem-based modules with `meta.plugins` enable **scalable, composable applications** with clear lifecycle guarantees. Each module creates an isolated scope where:
+
+* Child modules inherit hooks/plugins from parents
+* Sibling modules remain completely isolated
+* No configuration needed - just create directories and module files
